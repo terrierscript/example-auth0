@@ -6,15 +6,16 @@ import { useIsAuthenticated, useAuth0 } from './Auth/useAuth';
 const useGoToHandler = history => {
   return useCallback(route => () => history.replace(`/${route}`), [history]);
 };
-const App = ({ history }) => {
-  const { login, logout, isAuthenticated, renewSession } = useAuth0(history);
-  // useEffect(() => {
-  //   if (localStorage.getItem('isLoggedIn') === 'true') {
-  //     renewSession();
-  //   }
-  // }, []);
+
+export const App = ({ history }) => {
+  const { login, logout, isAuthenticatedMemo, renewSession } = useAuth0();
 
   const goToHandler = useGoToHandler(history);
+  useEffect(() => {
+    if (localStorage.getItem('isLoggedIn') === 'true') {
+      renewSession();
+    }
+  }, []);
 
   return (
     <div>
@@ -30,7 +31,7 @@ const App = ({ history }) => {
           >
             Home
           </Button>
-          {!isAuthenticated() && (
+          {!isAuthenticatedMemo && (
             <Button
               id="qsLoginBtn"
               bsStyle="primary"
@@ -40,19 +41,18 @@ const App = ({ history }) => {
               Log In
             </Button>
           )}
-          {/* {isAuthenticated() && ( */}
-          <Button
-            id="qsLogoutBtn"
-            bsStyle="primary"
-            className="btn-margin"
-            onClick={logout}
-          >
-            Log Out
-          </Button>
-          {/* )} */}
+          {isAuthenticatedMemo && (
+            <Button
+              id="qsLogoutBtn"
+              bsStyle="primary"
+              className="btn-margin"
+              onClick={logout}
+            >
+              Log Out
+            </Button>
+          )}
         </Navbar.Header>
       </Navbar>
     </div>
   );
 };
-export default App;

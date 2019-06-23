@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import { useAuth0 } from '../Auth/useAuth';
 
 export const Home = ({ history }) => {
-  const { login, isAuthenticated } = useAuth0(history);
+  const { login, isAuthenticatedMemo } = useAuth0();
   return (
     <div className="container">
-      {/* {isAuthenticated() && <h4>You are logged in!</h4>}
-      {!isAuthenticated() && (
+      {isAuthenticatedMemo && <h4>You are logged in!</h4>}
+      {!isAuthenticatedMemo && (
         <h4>
           You are not logged in! Please{' '}
           <a style={{ cursor: 'pointer' }} onClick={login}>
@@ -14,9 +14,7 @@ export const Home = ({ history }) => {
           </a>{' '}
           to continue.
         </h4>
-      )} */}
+      )}
     </div>
   );
 };
-
-export default Home;
