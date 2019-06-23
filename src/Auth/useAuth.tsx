@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useDebugValue, useMemo } from 'react';
 import { useContext, createContext, useCallback } from 'react';
 import { WebAuth } from 'auth0-js';
 import history from '../history';
@@ -15,15 +15,11 @@ const generateAuth = () =>
     domain: AUTH_CONFIG.domain,
     clientID: AUTH_CONFIG.clientID,
     redirectUri: AUTH_CONFIG.callbackUrl,
-    responseType: 'code token id_token',
+    responseType: 'token id_token',
     scope: 'openid'
   });
 
-type Context = {
-  auth0: auth0.WebAuth;
-  lock: Auth0Lock;
-};
-const Auth0Context = createContext<Context>(null);
+const Auth0Context = createContext<ReturnType<typeof useContextValue>>(null);
 
 export const useAuthState = () => {
   return useState({
@@ -36,14 +32,27 @@ export const useAuthState = () => {
 export const useIsAuthenticated = (auth, expiresAt) => {
   return useCallback(() => {
     return new Date().getTime() < expiresAt;
-  }, [auth]);
+  }, [auth, expiresAt]);
+};
+
+export const useIsAuthenticatedMemo = (auth, expiresAt) => {
+  return useMemo(() => {
+    return new Date().getTime() < expiresAt;
+  }, [auth, expiresAt]);
+};
+
+const useContextValue = () => {
+  const [authState, updateAuthState] = useAuthState();
+  return {
+    auth0: generateAuth(),
+    lock: generateLock(),
+    authState,
+    updateAuthState
+  };
 };
 
 export const Auth0Provider = ({ children }) => {
-  const value = {
-    auth0: generateAuth(),
-    lock: generateLock()
-  };
+  const value = useContextValue();
   return (
     <Auth0Context.Provider value={value}>{children}</Auth0Context.Provider>
   );
@@ -53,12 +62,16 @@ export const useAuth0Context = () => {
   return useContext(Auth0Context);
 };
 
-export const useAuth0 = _ => {
-  const { auth0, lock } = useContext(Auth0Context);
+export const useAuth0 = () => {
+  const { auth0, lock, authState, updateAuthState } = useContext(Auth0Context);
 
-  const [authState, updateAuthState] = useAuthState();
   const isAuthenticated = useIsAuthenticated(auth0, authState.expiresAt);
+  const isAuthenticatedMemo = useIsAuthenticatedMemo(
+    auth0,
+    authState.expiresAt
+  );
 
+  console.log(isAuthenticatedMemo, authState);
   const login = () => {
     // lock.show();
     auth0.authorize();
@@ -81,6 +94,7 @@ export const useAuth0 = _ => {
   };
 
   const setSession = authResult => {
+    console.log(authResult);
     localStorage.setItem('isLoggedIn', 'true');
 
     let expiresAt = authResult.expiresIn * 1000 + new Date().getTime();
@@ -91,20 +105,31 @@ export const useAuth0 = _ => {
     });
     history.replace('/home');
   };
+  // useDebugValue(authState);
 
   const renewSession = () => {
-    auth0.checkSession({}, (err, authResult) => {
-      if (authResult && authResult.accessToken && authResult.idToken) {
-        setSession(authResult);
-      } else if (err) {
-        logout();
-        console.log(err);
-        alert(
-          `Could not get a new token (${err.error}: ${err.error_description}).`
-        );
+    console.log('renew');
+    auth0.checkSession(
+      {
+        responseType: 'token id_token'
+      },
+      (err, authResult) => {
+        console.log('renew', err, authResult);
+        if (authResult && authResult.accessToken && authResult.idToken) {
+          setSession(authResult);
+        } else if (err) {
+          logout();
+          console.log(err);
+          alert(
+            `Could not get a new token (${err.error}: ${
+              err.error_description
+            }).`
+          );
+        }
       }
-    });
+    );
   };
+
   const handleAuthentication = () => {
     auth0.parseHash((err, authResult) => {
       if (authResult && authResult.accessToken && authResult.idToken) {
@@ -122,6 +147,7 @@ export const useAuth0 = _ => {
     logout,
     handleAuthentication,
     isAuthenticated,
+    isAuthenticatedMemo,
     renewSession,
     authState
   };

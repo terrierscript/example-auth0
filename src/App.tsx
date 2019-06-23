@@ -8,14 +8,14 @@ const useGoToHandler = history => {
 };
 
 export const App = ({ history }) => {
-  const { login, logout, isAuthenticated, renewSession } = useAuth0(history);
+  const { login, logout, isAuthenticatedMemo, renewSession } = useAuth0();
+
+  const goToHandler = useGoToHandler(history);
   useEffect(() => {
     if (localStorage.getItem('isLoggedIn') === 'true') {
       renewSession();
     }
   }, []);
-
-  const goToHandler = useGoToHandler(history);
 
   return (
     <div>
@@ -31,7 +31,7 @@ export const App = ({ history }) => {
           >
             Home
           </Button>
-          {!isAuthenticated() && (
+          {!isAuthenticatedMemo && (
             <Button
               id="qsLoginBtn"
               bsStyle="primary"
@@ -41,16 +41,16 @@ export const App = ({ history }) => {
               Log In
             </Button>
           )}
-          {/* {isAuthenticated() && ( */}
-          <Button
-            id="qsLogoutBtn"
-            bsStyle="primary"
-            className="btn-margin"
-            onClick={logout}
-          >
-            Log Out
-          </Button>
-          {/* )} */}
+          {isAuthenticatedMemo && (
+            <Button
+              id="qsLogoutBtn"
+              bsStyle="primary"
+              className="btn-margin"
+              onClick={logout}
+            >
+              Log Out
+            </Button>
+          )}
         </Navbar.Header>
       </Navbar>
     </div>

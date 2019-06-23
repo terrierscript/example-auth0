@@ -3,7 +3,8 @@ import loading from './loading.svg';
 import { useAuth0 } from '../Auth/useAuth';
 
 export const Callback = props => {
-  const { handleAuthentication } = useAuth0(history);
+  console.log('cb', location.href);
+  const { handleAuthentication } = useAuth0();
 
   const _handleAuthentication = useCallback(
     ({ location }) => {
@@ -13,7 +14,6 @@ export const Callback = props => {
     },
     [handleAuthentication]
   );
-  console.log('cb');
   _handleAuthentication(props);
 
   const style = {
