@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { Navbar, Button } from 'react-bootstrap';
 import './App.css';
+import { useIsAuthenticated, useAuth0Context } from './Auth/useAuth';
 
 const useAuth = auth => {
   useEffect(() => {
@@ -14,13 +15,13 @@ const useAuth = auth => {
 const useGoToHandler = history => {
   return useCallback(route => () => history.replace(`/${route}`), [history]);
 };
-const App = ({ auth, history }) => {
+const App = ({ history }) => {
+  const { auth } = useAuth0Context();
   useAuth(auth);
-  const { isAuthenticated } = auth;
+  const isAuthenticated = useIsAuthenticated(auth);
   const goToHandler = useGoToHandler(history);
-  const login = useCallback(() => auth.login(), [auth]);
+  const login = useCallback(() => auth.authorize(), [auth]);
   const logout = useCallback(() => auth.logout(), [auth]);
-  console.log(isAuthenticated());
 
   return (
     <div>

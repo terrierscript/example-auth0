@@ -64,7 +64,9 @@ export default class Auth {
   }
 
   renewSession() {
+    console.log('rene1');
     this.auth0.checkSession({}, (err, authResult) => {
+      console.log('rene2');
       if (authResult && authResult.accessToken && authResult.idToken) {
         this.setSession(authResult);
       } else if (err) {
