@@ -3,12 +3,7 @@ import { useContext, createContext, useCallback } from 'react';
 import { WebAuth } from 'auth0-js';
 import history from '../history';
 
-import { Auth0Lock } from 'auth0-lock';
-
 import { AUTH_CONFIG } from './auth0-variables';
-
-const generateLock = () =>
-  new Auth0Lock(AUTH_CONFIG.clientID, AUTH_CONFIG.domain);
 
 const generateAuth = () =>
   new WebAuth({
@@ -63,7 +58,7 @@ export const useAuth0Context = () => {
 };
 
 export const useAuth0 = () => {
-  const { auth0, lock, authState, updateAuthState } = useContext(Auth0Context);
+  const { auth0, authState, updateAuthState } = useContext(Auth0Context);
 
   const isAuthenticated = useIsAuthenticated(auth0, authState.expiresAt);
   const isAuthenticatedMemo = useIsAuthenticatedMemo(
