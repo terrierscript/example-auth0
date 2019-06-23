@@ -6,13 +6,14 @@ import { useIsAuthenticated, useAuth0 } from './Auth/useAuth';
 const useGoToHandler = history => {
   return useCallback(route => () => history.replace(`/${route}`), [history]);
 };
-const App = ({ history }) => {
+
+export const App = ({ history }) => {
   const { login, logout, isAuthenticated, renewSession } = useAuth0(history);
-  // useEffect(() => {
-  //   if (localStorage.getItem('isLoggedIn') === 'true') {
-  //     renewSession();
-  //   }
-  // }, []);
+  useEffect(() => {
+    if (localStorage.getItem('isLoggedIn') === 'true') {
+      renewSession();
+    }
+  }, []);
 
   const goToHandler = useGoToHandler(history);
 
@@ -55,4 +56,3 @@ const App = ({ history }) => {
     </div>
   );
 };
-export default App;

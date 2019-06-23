@@ -1,7 +1,3 @@
-// import { createBrowserHistory } from 'history';
+import { createBrowserHistory } from 'history';
 
-// export default createBrowserHistory();
-
-import createHistory from 'history/createBrowserHistory';
-
-export default createHistory();
+export default createBrowserHistory();
