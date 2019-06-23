@@ -1,4 +1,4 @@
-import React, { Component, useCallback, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import loading from './loading.svg';
 import { useAuth0 } from '../Auth/useAuth';
 

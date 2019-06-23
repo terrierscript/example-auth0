@@ -3,8 +3,8 @@ import { Route, Router, Switch } from 'react-router-dom';
 import { App } from './App';
 import { Home } from './Home/Home';
 import { Callback } from './Callback/Callback';
-import { Auth0Provider } from './Auth/useAuth';
 import history from './history';
+import { Auth0Provider } from './Auth/AuthContext';
 
 const Routes = () => {
   return (
