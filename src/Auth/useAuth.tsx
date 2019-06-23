@@ -16,7 +16,7 @@ const generateAuth = () =>
 
 const Auth0Context = createContext<ReturnType<typeof useContextValue>>(null);
 
-export const useAuthState = () => {
+const useAuthState = () => {
   return useState({
     accessToken: null,
     idToken: null,
@@ -24,10 +24,10 @@ export const useAuthState = () => {
   });
 };
 
-export const useIsAuthenticatedMemo = (auth, expiresAt) => {
+const useIsAuthenticatedMemo = (auth, expiresAt) => {
   return useMemo(() => {
     return new Date().getTime() < expiresAt;
-  }, [auth, expiresAt]);
+  }, [expiresAt]);
 };
 
 const useContextValue = () => {
@@ -47,27 +47,20 @@ export const Auth0Provider = ({ children }) => {
   );
 };
 
-export const useAuth0Context = () => {
-  return useContext(Auth0Context);
-};
-
 export const useAuth0 = () => {
   const { auth0, authState, updateAuthState } = useContext(Auth0Context);
 
-  const isAuthenticatedMemo = useIsAuthenticatedMemo(
-    auth0,
-    authState.expiresAt
-  );
+  const isAuthenticated = useIsAuthenticatedMemo(auth0, authState.expiresAt);
 
-  useDebugValue(isAuthenticatedMemo);
+  useDebugValue(isAuthenticated);
   useDebugValue(authState);
 
-  const login = () => {
+  const login = useCallback(() => {
     // lock.show();
     auth0.authorize();
-  };
+  }, [auth0]);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     updateAuthState({
       accessToken: null,
       idToken: null,
@@ -81,24 +74,25 @@ export const useAuth0 = () => {
 
     // navigate to the home route
     history.replace('/home');
-  };
+  }, [auth0, updateAuthState]);
 
-  const setSession = authResult => {
-    console.log(authResult);
-    localStorage.setItem('isLoggedIn', 'true');
+  const setSession = useCallback(
+    authResult => {
+      localStorage.setItem('isLoggedIn', 'true');
 
-    let expiresAt = authResult.expiresIn * 1000 + new Date().getTime();
-    updateAuthState({
-      accessToken: authResult.accessToken,
-      idToken: authResult.idToken,
-      expiresAt: expiresAt
-    });
-    history.replace('/home');
-  };
+      let expiresAt = authResult.expiresIn * 1000 + new Date().getTime();
+      updateAuthState({
+        accessToken: authResult.accessToken,
+        idToken: authResult.idToken,
+        expiresAt: expiresAt
+      });
+      history.replace('/home');
+    },
+    [updateAuthState]
+  );
   // useDebugValue(authState);
 
-  const renewSession = () => {
-    console.log('renew');
+  const renewSession = useCallback(() => {
     auth0.checkSession({}, (err, authResult) => {
       if (authResult && authResult.accessToken && authResult.idToken) {
         setSession(authResult);
@@ -110,26 +104,24 @@ export const useAuth0 = () => {
         );
       }
     });
-  };
+  }, [auth0, logout, setSession]);
 
-  const handleAuthentication = () => {
+  const handleAuthentication = useCallback(() => {
     auth0.parseHash((err, authResult) => {
       if (authResult && authResult.accessToken && authResult.idToken) {
         setSession(authResult);
       } else if (err) {
         history.replace('/home');
-        console.error(err);
         alert(`Error: ${err.error}. Check the console for further details.`);
       }
     });
-  };
+  }, [auth0, setSession]);
+
   return {
-    auth: auth0,
     login,
     logout,
     handleAuthentication,
-    isAuthenticatedMemo,
-    renewSession,
-    authState
+    isAuthenticated,
+    renewSession
   };
 };

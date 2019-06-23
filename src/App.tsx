@@ -8,14 +8,19 @@ const useGoToHandler = history => {
 };
 
 export const App = ({ history }) => {
-  const { login, logout, isAuthenticatedMemo, renewSession } = useAuth0();
+  const {
+    login,
+    logout,
+    isAuthenticated: isAuthenticatedMemo,
+    renewSession
+  } = useAuth0();
 
   const goToHandler = useGoToHandler(history);
   useEffect(() => {
     if (localStorage.getItem('isLoggedIn') === 'true') {
       renewSession();
     }
-  }, []);
+  }, [renewSession]);
 
   return (
     <div>

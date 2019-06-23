@@ -3,14 +3,19 @@
   "version": "0.2.0",
   "private": true,
   "devDependencies": {
+    "eslint": "^6.0.0",
+    "eslint-plugin-react": "^7.13.0",
     "react-scripts": "^2.1.8"
   },
   "dependencies": {
     "@types/auth0-js": "^9.10.2",
     "@types/react": "^16.8.22",
+    "@typescript-eslint/eslint-plugin": "^1.10.2",
+    "@typescript-eslint/parser": "^1.10.2",
     "auth0-js": "^9.0.0",
     "auth0-lock": "^11.16.3",
     "bootstrap": "^3.3.7",
+    "eslint-plugin-react-hooks": "^1.6.0",
     "parcel": "^1.12.3",
     "react": "^16.8.6",
     "react-bootstrap": "^0.31.2",

@@ -7,12 +7,8 @@
     "jsx": "preserve",
     "strict": false,
     "esModuleInterop": true,
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
-    "skipLibCheck": true,
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "skipLibCheck": false,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
@@ -20,11 +16,5 @@
     "isolatedModules": true,
     "noEmit": true
   },
-  "files": [
-    "strict",
-    "false"
-  ],
-  "include": [
-    "src"
-  ]
+  "include": ["src"]
 }

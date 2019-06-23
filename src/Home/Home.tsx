@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { useAuth0 } from '../Auth/useAuth';
 
 export const Home = ({ history }) => {
-  const { login, isAuthenticatedMemo } = useAuth0();
+  const { login, isAuthenticated: isAuthenticatedMemo } = useAuth0();
   return (
     <div className="container">
       {isAuthenticatedMemo && <h4>You are logged in!</h4>}
