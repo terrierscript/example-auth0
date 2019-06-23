@@ -62,7 +62,7 @@ export const useAuth0 = () => {
         );
       }
     });
-  }, [auth0, logout, setSession]);
+  }, []);
 
   const handleAuthentication = useCallback(() => {
     auth0.parseHash((err, authResult) => {
@@ -73,7 +73,7 @@ export const useAuth0 = () => {
         alert(`Error: ${err.error}. Check the console for further details.`);
       }
     });
-  }, [auth0, setSession]);
+  }, []);
 
   return {
     login,
