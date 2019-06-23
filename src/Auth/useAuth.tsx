@@ -1,59 +1,17 @@
-import React, { useState, useMemo, useDebugValue } from 'react';
-import { useContext, createContext, useCallback } from 'react';
-import { WebAuth } from 'auth0-js';
+import { useCallback, useMemo } from 'react';
 import history from '../history';
+import { useAuth0Context } from './AuthContext';
 
-import { AUTH_CONFIG } from './auth0-variables';
-
-const generateAuth = () =>
-  new WebAuth({
-    domain: AUTH_CONFIG.domain,
-    clientID: AUTH_CONFIG.clientID,
-    redirectUri: AUTH_CONFIG.callbackUrl,
-    responseType: 'token id_token',
-    scope: 'openid'
-  });
-
-const Auth0Context = createContext<ReturnType<typeof useContextValue>>(null);
-
-const useAuthState = () => {
-  return useState({
-    accessToken: null,
-    idToken: null,
-    expiresAt: 0
-  });
-};
-
-const useIsAuthenticated = (auth, expiresAt) => {
+const useIsAuthenticated = expiresAt => {
   return useMemo(() => {
     return new Date().getTime() < expiresAt;
   }, [expiresAt]);
 };
 
-const useContextValue = () => {
-  const [authState, updateAuthState] = useAuthState();
-  return {
-    auth0: generateAuth(),
-    // lock: generateLock(),
-    authState,
-    updateAuthState
-  };
-};
-
-export const Auth0Provider = ({ children }) => {
-  const value = useContextValue();
-  return (
-    <Auth0Context.Provider value={value}>{children}</Auth0Context.Provider>
-  );
-};
-
 export const useAuth0 = () => {
-  const { auth0, authState, updateAuthState } = useContext(Auth0Context);
+  const { auth0, authState, updateAuthState } = useAuth0Context();
 
-  const isAuthenticated = useIsAuthenticated(auth0, authState.expiresAt);
-
-  useDebugValue(isAuthenticated);
-  useDebugValue(authState);
+  const isAuthenticated = useIsAuthenticated(authState.expiresAt);
 
   const login = useCallback(() => {
     // lock.show();
