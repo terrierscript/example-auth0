@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import { useAuth0 } from '../Auth/useAuth';
 
 export const Home = ({ history }) => {
-  const { login, isAuthenticated: isAuthenticatedMemo } = useAuth0();
+  const { login, isAuthenticated: isAuthenticated } = useAuth0();
   return (
     <div className="container">
-      {isAuthenticatedMemo && <h4>You are logged in!</h4>}
-      {!isAuthenticatedMemo && (
+      {isAuthenticated && <h4>You are logged in!</h4>}
+      {!isAuthenticated && (
         <h4>
           You are not logged in! Please{' '}
           <a style={{ cursor: 'pointer' }} onClick={login}>

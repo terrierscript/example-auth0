@@ -24,7 +24,7 @@ const useAuthState = () => {
   });
 };
 
-const useIsAuthenticatedMemo = (auth, expiresAt) => {
+const useIsAuthenticated = (auth, expiresAt) => {
   return useMemo(() => {
     return new Date().getTime() < expiresAt;
   }, [expiresAt]);
@@ -50,7 +50,7 @@ export const Auth0Provider = ({ children }) => {
 export const useAuth0 = () => {
   const { auth0, authState, updateAuthState } = useContext(Auth0Context);
 
-  const isAuthenticated = useIsAuthenticatedMemo(auth0, authState.expiresAt);
+  const isAuthenticated = useIsAuthenticated(auth0, authState.expiresAt);
 
   useDebugValue(isAuthenticated);
   useDebugValue(authState);

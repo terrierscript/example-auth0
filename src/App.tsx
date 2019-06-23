@@ -8,12 +8,7 @@ const useGoToHandler = history => {
 };
 
 export const App = ({ history }) => {
-  const {
-    login,
-    logout,
-    isAuthenticated: isAuthenticatedMemo,
-    renewSession
-  } = useAuth0();
+  const { login, logout, isAuthenticated, renewSession } = useAuth0();
 
   const goToHandler = useGoToHandler(history);
   useEffect(() => {
@@ -36,7 +31,7 @@ export const App = ({ history }) => {
           >
             Home
           </Button>
-          {!isAuthenticatedMemo && (
+          {!isAuthenticated && (
             <Button
               id="qsLoginBtn"
               bsStyle="primary"
@@ -46,7 +41,7 @@ export const App = ({ history }) => {
               Log In
             </Button>
           )}
-          {isAuthenticatedMemo && (
+          {isAuthenticated && (
             <Button
               id="qsLogoutBtn"
               bsStyle="primary"
