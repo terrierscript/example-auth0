@@ -1,15 +1,12 @@
-import React, { useCallback, useContext, useEffect } from 'react';
-import { Route, BrowserRouter, Router, Switch } from 'react-router-dom';
+import React from 'react';
+import { Route, Router, Switch } from 'react-router-dom';
 import { App } from './App';
 import { Home } from './Home/Home';
 import { Callback } from './Callback/Callback';
-// import Auth from './Auth/Auth';
-import { Auth0Provider, useAuth0 } from './Auth/useAuth';
+import { Auth0Provider } from './Auth/useAuth';
 import history from './history';
 
 const Routes = () => {
-  const { renewSession } = useAuth0();
-
   return (
     <Router history={history}>
       <Route path="/" render={props => <App {...props} />} />

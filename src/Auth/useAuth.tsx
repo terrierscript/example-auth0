@@ -1,4 +1,4 @@
-import React, { useState, useDebugValue, useMemo } from 'react';
+import React, { useState, useMemo, useDebugValue } from 'react';
 import { useContext, createContext, useCallback } from 'react';
 import { WebAuth } from 'auth0-js';
 import history from '../history';
@@ -24,12 +24,6 @@ export const useAuthState = () => {
   });
 };
 
-export const useIsAuthenticated = (auth, expiresAt) => {
-  return useCallback(() => {
-    return new Date().getTime() < expiresAt;
-  }, [auth, expiresAt]);
-};
-
 export const useIsAuthenticatedMemo = (auth, expiresAt) => {
   return useMemo(() => {
     return new Date().getTime() < expiresAt;
@@ -40,7 +34,7 @@ const useContextValue = () => {
   const [authState, updateAuthState] = useAuthState();
   return {
     auth0: generateAuth(),
-    lock: generateLock(),
+    // lock: generateLock(),
     authState,
     updateAuthState
   };
@@ -60,13 +54,14 @@ export const useAuth0Context = () => {
 export const useAuth0 = () => {
   const { auth0, authState, updateAuthState } = useContext(Auth0Context);
 
-  const isAuthenticated = useIsAuthenticated(auth0, authState.expiresAt);
   const isAuthenticatedMemo = useIsAuthenticatedMemo(
     auth0,
     authState.expiresAt
   );
 
-  console.log(isAuthenticatedMemo, authState);
+  useDebugValue(isAuthenticatedMemo);
+  useDebugValue(authState);
+
   const login = () => {
     // lock.show();
     auth0.authorize();
@@ -106,10 +101,9 @@ export const useAuth0 = () => {
     console.log('renew');
     auth0.checkSession(
       {
-        responseType: 'token id_token'
+        // responseType: 'token id_token'
       },
       (err, authResult) => {
-        console.log('renew', err, authResult);
         if (authResult && authResult.accessToken && authResult.idToken) {
           setSession(authResult);
         } else if (err) {
@@ -141,7 +135,6 @@ export const useAuth0 = () => {
     login,
     logout,
     handleAuthentication,
-    isAuthenticated,
     isAuthenticatedMemo,
     renewSession,
     authState
