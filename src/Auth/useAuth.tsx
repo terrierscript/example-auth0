@@ -1,20 +1,22 @@
 import React, { useState } from 'react';
 import { useContext, createContext, useCallback } from 'react';
-import auth0 from 'auth0-js';
+import { WebAuth } from 'auth0-js';
 
 import { AUTH_CONFIG } from './auth0-variables';
-const auth0web = new auth0.WebAuth({
-  domain: AUTH_CONFIG.domain,
-  clientID: AUTH_CONFIG.clientID,
-  redirectUri: AUTH_CONFIG.callbackUrl,
-  responseType: 'token id_token',
-  scope: 'openid'
-});
 
-type Context = {
-  auth: auth0.WebAuth;
+const generateAuth = () => {
+  return new WebAuth({
+    domain: AUTH_CONFIG.domain,
+    clientID: AUTH_CONFIG.clientID,
+    redirectUri: AUTH_CONFIG.callbackUrl,
+    responseType: 'token id_token',
+    scope: 'openid'
+  });
 };
-const Auth0Context = createContext<Context>({ auth: auth0web });
+type Context = {
+  auth0: auth0.WebAuth;
+};
+const Auth0Context = createContext<Context>(null);
 
 export const useAuthState = () => {
   return useState({
@@ -23,17 +25,16 @@ export const useAuthState = () => {
     expiresAt: 0
   });
 };
-// @ts-ignore
+
 export const useIsAuthenticated = (auth, expiresAt) => {
   return useCallback(() => {
-    let expiresAt = auth.expiresAt;
     return new Date().getTime() < expiresAt;
   }, [auth]);
 };
 
 export const Auth0Provider = ({ children }) => {
   const value = {
-    auth: auth0web
+    auth0: generateAuth()
   };
   return (
     <Auth0Context.Provider value={value}>{children}</Auth0Context.Provider>
@@ -45,15 +46,16 @@ export const useAuth0Context = () => {
 };
 
 export const useAuth0 = history => {
-  const { auth } = useContext(Auth0Context);
+  const { auth0 } = useContext(Auth0Context);
   const [authState, updateAuthState] = useAuthState();
-  const isAuthenticated = useIsAuthenticated(auth, authState.expiresAt);
+  const isAuthenticated = useIsAuthenticated(auth0, authState.expiresAt);
 
-  const login = useCallback(() => {
-    auth.authorize();
-  }, [auth]);
+  const login = () => {
+    console.log(auth0);
+    auth0.authorize();
+  };
 
-  const logout = useCallback(() => {
+  const logout = () => {
     updateAuthState({
       accessToken: null,
       idToken: null,
@@ -61,25 +63,28 @@ export const useAuth0 = history => {
     });
     localStorage.removeItem('isLoggedIn');
 
-    auth.logout({
+    auth0.logout({
       returnTo: window.location.origin
     });
 
     // navigate to the home route
     history.replace('/home');
-  }, [auth]);
+  };
 
   const setSession = authResult => {
+    localStorage.setItem('isLoggedIn', 'true');
+
     let expiresAt = authResult.expiresIn * 1000 + new Date().getTime();
     updateAuthState({
       accessToken: authResult.accessToken,
       idToken: authResult.idToken,
       expiresAt: expiresAt
     });
+    history.replace('/home');
   };
 
   const renewSession = () => {
-    auth.checkSession({}, (err, authResult) => {
+    auth0.checkSession({}, (err, authResult) => {
       if (authResult && authResult.accessToken && authResult.idToken) {
         setSession(authResult);
       } else if (err) {
@@ -92,7 +97,7 @@ export const useAuth0 = history => {
     });
   };
   const handleAuthentication = () => {
-    auth.parseHash((err, authResult) => {
+    auth0.parseHash((err, authResult) => {
       if (authResult && authResult.accessToken && authResult.idToken) {
         setSession(authResult);
       } else if (err) {
@@ -103,7 +108,7 @@ export const useAuth0 = history => {
     });
   };
   return {
-    auth,
+    auth: auth0,
     login,
     logout,
     handleAuthentication,

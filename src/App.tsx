@@ -3,21 +3,17 @@ import { Navbar, Button } from 'react-bootstrap';
 import './App.css';
 import { useIsAuthenticated, useAuth0 } from './Auth/useAuth';
 
-const useAuth = auth => {
-  useEffect(() => {
-    const { renewSession } = auth;
-    if (localStorage.getItem('isLoggedIn') === 'true') {
-      renewSession();
-    }
-  }, []);
-};
-
 const useGoToHandler = history => {
   return useCallback(route => () => history.replace(`/${route}`), [history]);
 };
 const App = ({ history }) => {
-  const { auth, login, logout, isAuthenticated } = useAuth0(history);
-  useAuth(auth);
+  const { login, logout, isAuthenticated, renewSession } = useAuth0(history);
+  useEffect(() => {
+    if (localStorage.getItem('isLoggedIn') === 'true') {
+      renewSession();
+    }
+  }, []);
+
   const goToHandler = useGoToHandler(history);
 
   return (
