@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { Navbar, Button } from 'react-bootstrap';
 import './App.css';
-import { useIsAuthenticated, useAuth0 } from './Auth/useAuth';
+import { useAuth0 } from './Auth/useAuth';
 
 const useGoToHandler = history => {
   return useCallback(route => () => history.replace(`/${route}`), [history]);
