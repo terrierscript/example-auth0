@@ -8,12 +8,14 @@ import {
   Auth0Provider,
   // Auth0Context
   useAuth0Context,
-  useAuth0
+  useAuth0,
+  generateAuth
 } from './Auth/useAuth';
 import history from './history';
 
+const auth0 = generateAuth();
 const Routes = () => {
-  const { auth, handleAuthentication } = useAuth0(history);
+  const { handleAuthentication } = useAuth0(history);
 
   const _handleAuthentication = ({ location }) => {
     if (/access_token|id_token|error/.test(location.hash)) {
@@ -23,8 +25,8 @@ const Routes = () => {
   return (
     <Router history={history}>
       <div>
-        <Route path="/" render={props => <App auth={auth} {...props} />} />
-        <Route path="/home" render={props => <Home auth={auth} {...props} />} />
+        <Route path="/" render={props => <App {...props} />} />
+        <Route path="/home" render={props => <Home {...props} />} />
         <Route
           path="/callback"
           render={props => {
@@ -38,7 +40,7 @@ const Routes = () => {
 };
 export const makeMainRoutes = () => {
   return (
-    <Auth0Provider>
+    <Auth0Provider auth0={auth0}>
       <Routes />
     </Auth0Provider>
   );

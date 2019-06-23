@@ -9,6 +9,7 @@
     "@types/auth0-js": "^9.10.2",
     "@types/react": "^16.8.22",
     "auth0-js": "^9.0.0",
+    "auth0-lock": "^11.16.3",
     "bootstrap": "^3.3.7",
     "parcel": "^1.12.3",
     "react": "^16.8.6",
@@ -19,7 +20,8 @@
     "typescript": "^3.5.2"
   },
   "scripts": {
-    "start": "parcel start src/index.html -p 3000",
+    "start": "parcel start src/index.html",
+    "start2": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
