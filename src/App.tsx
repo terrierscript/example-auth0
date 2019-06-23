@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { Navbar, Button } from 'react-bootstrap';
 import './App.css';
-import { useIsAuthenticated, useAuth0Context } from './Auth/useAuth';
+import { useIsAuthenticated, useAuth0 } from './Auth/useAuth';
 
 const useAuth = auth => {
   useEffect(() => {
@@ -16,12 +16,9 @@ const useGoToHandler = history => {
   return useCallback(route => () => history.replace(`/${route}`), [history]);
 };
 const App = ({ history }) => {
-  const { auth } = useAuth0Context();
+  const { auth, login, logout, isAuthenticated } = useAuth0(history);
   useAuth(auth);
-  const isAuthenticated = useIsAuthenticated(auth);
   const goToHandler = useGoToHandler(history);
-  const login = useCallback(() => auth.authorize(), [auth]);
-  const logout = useCallback(() => auth.logout(), [auth]);
 
   return (
     <div>
@@ -47,16 +44,16 @@ const App = ({ history }) => {
               Log In
             </Button>
           )}
-          {isAuthenticated() && (
-            <Button
-              id="qsLogoutBtn"
-              bsStyle="primary"
-              className="btn-margin"
-              onClick={logout}
-            >
-              Log Out
-            </Button>
-          )}
+          {/* {isAuthenticated() && ( */}
+          <Button
+            id="qsLogoutBtn"
+            bsStyle="primary"
+            className="btn-margin"
+            onClick={logout}
+          >
+            Log Out
+          </Button>
+          {/* )} */}
         </Navbar.Header>
       </Navbar>
     </div>

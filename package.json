@@ -19,7 +19,7 @@
     "typescript": "^3.5.2"
   },
   "scripts": {
-    "start": "parcel start src/index.html",
+    "start": "parcel start src/index.html -p 3000",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"

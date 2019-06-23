@@ -7,30 +7,19 @@ import Callback from './Callback/Callback';
 import {
   Auth0Provider,
   // Auth0Context
-  useAuth0Context
+  useAuth0Context,
+  useAuth0
 } from './Auth/useAuth';
 import history from './history';
 
-// const auth = new Auth();
-
-// const handleAuthentication = ({ location }) => {
-//   if (/access_token|id_token|error/.test(location.hash)) {
-//     auth.handleAuthentication();
-//   }
-// };
-
 const Routes = () => {
-  const a = useAuth0Context();
-  const { auth } = useAuth0Context();
+  const { auth, handleAuthentication } = useAuth0(history);
 
-  const handleAuthentication = useCallback(
-    location => {
-      if (/access_token|id_token|error/.test(location.hash)) {
-        auth.handleAuthentication();
-      }
-    },
-    [auth]
-  );
+  const _handleAuthentication = ({ location }) => {
+    if (/access_token|id_token|error/.test(location.hash)) {
+      handleAuthentication();
+    }
+  };
   return (
     <Router history={history}>
       <div>
@@ -39,7 +28,7 @@ const Routes = () => {
         <Route
           path="/callback"
           render={props => {
-            handleAuthentication(props);
+            _handleAuthentication(props);
             return <Callback {...props} />;
           }}
         />
